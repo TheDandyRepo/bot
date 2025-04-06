@@ -2,6 +2,7 @@ const mineflayer = require('mineflayer');
 const Movements = require('mineflayer-pathfinder').Movements;
 const pathfinder = require('mineflayer-pathfinder').pathfinder;
 const { GoalBlock } = require('mineflayer-pathfinder').goals;
+const axios = require('axios');  // We'll use axios for sending HTTP requests to Discord
 
 const config = require('./settings.json');
 const express = require('express');
@@ -19,6 +20,22 @@ app.listen(8000, () => {
 // Optional: strip Minecraft color codes
 function stripColors(text) {
   return text.replace(/§[0-9a-fklmnor]/gi, '');
+}
+
+// Function to send a message to Discord webhook
+async function sendToDiscord(message, username) {
+  try {
+    const webhookUrl = config.discordWebhookUrl;  // Assuming the webhook URL is saved in settings.json
+    const payload = {
+      content: message,
+      username: username,  // Use the Minecraft player's name as the username
+    };
+
+    await axios.post(webhookUrl, payload);
+    console.log(`[Discord] Sent message: "${message}"`);
+  } catch (err) {
+    console.error(`[Discord Error] Failed to send message: ${err}`);
+  }
 }
 
 function createBot() {
@@ -153,10 +170,14 @@ function createBot() {
     console.log(`\x1b[31m[ERROR] ${err.message}\x1b[0m`);
   });
 
-  // 💬 Full raw message logging
+  // 💬 Full raw message logging and Discord integration
   bot.on('message', (msg) => {
-    console.log('[Server Message]:', msg.toString());
+    const message = msg.toString();
+    console.log('[Server Message]:', message);
     console.log('[DEBUG RAW MESSAGE]:', JSON.stringify(msg, null, 2));
+
+    // Send the message to Discord using the bot's username
+    sendToDiscord(message, bot.username);
   });
 
   // 🔁 Auto Reconnect
@@ -171,3 +192,4 @@ function createBot() {
 }
 
 createBot();
+
