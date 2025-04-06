@@ -10,6 +10,7 @@
     "port": 45481,   
     "version": "1.18.2"   
   },
+  "discordWebhookUrl": "https://discord.com/api/webhooks/1358378747258208346/nzlTzMqxtl7o1Ii14D_zf68Zxjoa54Qk3gXfXnyA-4ypgSDwBDGLcge2eYMZebHR_T4l",
   
   "position": {
     "enabled": false,
