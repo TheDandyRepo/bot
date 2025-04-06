@@ -170,15 +170,20 @@ function createBot() {
     console.log(`\x1b[31m[ERROR] ${err.message}\x1b[0m`);
   });
 
-  // 💬 Full raw message logging and Discord integration
-  bot.on('message', (msg) => {
-    const message = msg.toString();
+ // 💬 Full raw message logging and Discord integration
+bot.on('message', (msg) => {
+  const message = msg.toString();
+  const sender = msg.toString().split(':')[0].trim(); // Get the sender's name (usually in the format "playername: message")
+
+  // Only send messages to Discord if they're from players (not the bot itself)
+  if (sender !== bot.username) {
     console.log('[Server Message]:', message);
     console.log('[DEBUG RAW MESSAGE]:', JSON.stringify(msg, null, 2));
 
-    // Send the message to Discord using the bot's username
-    sendToDiscord(message, bot.username);
-  });
+    // Send the message to Discord using the player's name as the username
+    sendToDiscord(message, sender);
+  }
+});
 
   // 🔁 Auto Reconnect
   if (config.utils['auto-reconnect']) {
