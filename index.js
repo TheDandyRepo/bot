@@ -171,19 +171,50 @@ function createBot() {
   });
 
  // 💬 Full raw message logging and Discord integration
+// 💬 Full raw message logging and Discord integration
 bot.on('message', (msg) => {
-  const message = msg.toString();
-  const sender = msg.toString().split(':')[0].trim(); // Get the sender's name (usually in the format "playername: message")
+  const message = msg.toString().trim();
+  
+  // Check if the message is from a player (not system messages)
+  const senderMatch = message.match(/^(\S+)(.*)$/);  // Match player name and message
+  if (senderMatch) {
+    const sender = senderMatch[1];  // The player's username (before the message)
+    const playerMessage = senderMatch[2].trim();  // The actual message
 
-  // Only send messages to Discord if they're from players (not the bot itself)
-  if (sender !== bot.username) {
-    console.log('[Server Message]:', message);
-    console.log('[DEBUG RAW MESSAGE]:', JSON.stringify(msg, null, 2));
+    // Check if the message is not a system message (e.g., "joined the game")
+    if (!playerMessage.startsWith('joined the game') && !playerMessage.startsWith('left the game')) {
+      console.log(`[Server Message]: ${playerMessage}`);
+      
+      // Clean the message to remove Minecraft formatting codes (e.g., colors, < > symbols)
+      const cleanedMessage = stripColors(playerMessage).replace(/[<>]/g, '').trim();
 
-    // Send the message to Discord using the player's name as the username
-    sendToDiscord(message, sender);
+      // Send the message to Discord using the player's username as the username
+      sendToDiscord(cleanedMessage, sender);
+    }
   }
 });
+
+// Function to strip Minecraft color codes
+function stripColors(text) {
+  return text.replace(/§[0-9a-fklmnor]/gi, '');
+}
+
+// Function to send a message to Discord webhook
+async function sendToDiscord(message, username) {
+  try {
+    const webhookUrl = config.discordWebhookUrl;  // Assuming the webhook URL is saved in settings.json
+    const payload = {
+      content: message,
+      username: username,  // Use the Minecraft player's name as the username
+    };
+
+    await axios.post(webhookUrl, payload);
+    console.log(`[Discord] Sent message: "${message}" from ${username}`);
+  } catch (err) {
+    console.error(`[Discord Error] Failed to send message: ${err}`);
+  }
+}
+
 
   // 🔁 Auto Reconnect
   if (config.utils['auto-reconnect']) {
