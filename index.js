@@ -3,6 +3,18 @@ const Movements = require('mineflayer-pathfinder').Movements;
 const pathfinder = require('mineflayer-pathfinder').pathfinder;
 const { GoalBlock } = require('mineflayer-pathfinder').goals;
 
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Bot is alive!');
+});
+
+app.listen(8000, () => {
+  console.log('Web server running');
+});
+
+
 const config = require('./settings.json');
 const express = require('express');
 
