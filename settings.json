@@ -1,6 +1,6 @@
 {
   "bot-account": {
-    "username": "LifeStealBot", 
+    "username": "CherryBlossomSMP", 
     "password": "",
     "type": "mojang"
   },
@@ -36,7 +36,7 @@
       "repeat-delay": 60,
 
       "messages": [
-        "Welcome to the LifeSteal SMP!",
+        "Welcome to the Cherry Blossom SMP",
         "I keep the server up 24/7!"
       ]
     },
